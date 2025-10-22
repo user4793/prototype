@@ -17,7 +17,6 @@ export default function RootLayout({ children }) {
   }}
 >
 
-          Replai
         <header
   style={{
     display: "flex",
