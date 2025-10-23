@@ -2,18 +2,27 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   const body = await req.json().catch(() => ({}));
-  const { slug, message } = body || {};
+  const { slug, message, conversation_id } = body || {};
   if (!slug || !message) {
-    return NextResponse.json({ reply: "Missing slug or message." });
+    return NextResponse.json({ reply: "Missing slug or message." }, { status: 400 });
   }
 
-  // Demo local responses — later, replace with n8n webhook fetch
-  const lower = message.toLowerCase();
-  if (lower.includes("hello") || lower.includes("hi")) {
-    return NextResponse.json({ reply: `Hello! I’m ${slug}’s assistant.` });
+  try {
+    const res = await fetch(process.env.https://replai.app.n8n.cloud/webhook/chat, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ slug, message, conversation_id })
+    });
+
+    if (!res.ok) {
+      return NextResponse.json({ reply: "Assistant error. Please try again." }, { status: 200 });
+    }
+
+    const data = await res.json().catch(async () => ({ reply: await res.text() }));
+    return NextResponse.json({ reply: data?.reply ?? "…" });
+  } catch (e) {
+    return NextResponse.json({ reply: "Could not reach the assistant." }, { status: 200 });
   }
-  if (lower.includes("book") || lower.includes("meeting")) {
-    return NextResponse.json({ reply: "Sure — what day and time should I schedule?" });
-  }
-  return NextResponse.json({ reply: `You said: “${message}”. (Connect n8n to customize this.)` });
 }
