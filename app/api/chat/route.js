@@ -7,8 +7,13 @@ export async function POST(req) {
     return NextResponse.json({ reply: "Missing slug or message." }, { status: 400 });
   }
 
+  const url = process.env.N8N_WEBHOOK_URL; // ← use an ENV VAR name here
+  if (!url) {
+    return NextResponse.json({ reply: "Server not configured (N8N_WEBHOOK_URL missing)." }, { status: 500 });
+  }
+
   try {
-    const res = await fetch(process.env.https://replai.app.n8n.cloud/webhook/chat, {
+    const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -17,6 +22,7 @@ export async function POST(req) {
     });
 
     if (!res.ok) {
+      const text = await res.text();
       return NextResponse.json({ reply: "Assistant error. Please try again." }, { status: 200 });
     }
 
