@@ -7,7 +7,7 @@ export async function POST(req) {
     return NextResponse.json({ reply: "Missing slug or message." }, { status: 400 });
   }
 
-  const url = process.env.N8N_WEBHOOK_URL || "https://replai.app.n8n.cloud/webhook/chat";
+  const url = process.env.N8N_WEBHOOK_URL;
 
   try {
     const res = await fetch(url, {
